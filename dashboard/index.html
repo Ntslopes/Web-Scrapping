@@ -17,7 +17,10 @@
     </header>
     
     <div id="error-banner" class="error-banner hidden" aria-live="polite">
-        <p>Não foi possível conectar à API em <span id="api-url-error"></span></p>
+        <div>
+            <strong>Aviso de Conexão:</strong> Não foi possível conectar à API em <span id="api-url-error"></span>.
+            <div style="font-size: 0.85rem; margin-top: 0.25rem; opacity: 0.85;">Inicie o servidor no terminal com: <code>uvicorn api:app --reload</code></div>
+        </div>
         <button id="retry-btn" class="btn">Tentar novamente</button>
     </div>
 
@@ -86,16 +89,22 @@
         <section class="charts" aria-label="Gráficos">
             <div class="chart-container">
                 <h3>Top 10 Atletas</h3>
-                <canvas id="chart-top"></canvas>
+                <div class="chart-wrapper">
+                    <canvas id="chart-top"></canvas>
+                </div>
             </div>
             <div class="chart-container">
                 <h3>Distribuição de Pontuação</h3>
-                <canvas id="chart-dist"></canvas>
+                <div class="chart-wrapper">
+                    <canvas id="chart-dist"></canvas>
+                </div>
             </div>
             <div class="chart-container">
                 <h3>Evolução por Coleta</h3>
-                <canvas id="chart-history"></canvas>
-                <div id="chart-history-msg" class="hidden chart-msg">Rode o crawler novamente para ver a evolução</div>
+                <div class="chart-wrapper">
+                    <canvas id="chart-history"></canvas>
+                    <div id="chart-history-msg" class="hidden chart-msg">Rode o crawler novamente para ver a evolução</div>
+                </div>
             </div>
         </section>
 
@@ -171,12 +180,14 @@
                 </div>
                 <div class="modal-chart">
                     <h3>Histórico de Pontuação</h3>
-                    <canvas id="modal-history-chart"></canvas>
+                    <div class="modal-chart-wrapper">
+                        <canvas id="modal-history-chart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script type="module" src="app.js"></script>
+    <script defer src="app.js"></script>
 </body>
 </html>

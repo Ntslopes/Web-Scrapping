@@ -183,7 +183,7 @@ header p {
 /* Charts */
 .charts {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 1.5rem;
     margin-bottom: 2.5rem;
 }
@@ -192,12 +192,30 @@ header p {
     border-radius: var(--radius);
     padding: 1.5rem;
     position: relative;
-    min-height: 250px;
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 .chart-container h3 {
     font-size: 1rem;
     font-weight: 600;
     margin-bottom: 1rem;
+    flex-shrink: 0;
+}
+.chart-wrapper {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
+    height: 100%;
+}
+.chart-wrapper canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
 }
 .chart-msg {
     position: absolute;
@@ -206,6 +224,8 @@ header p {
     transform: translate(-50%, -50%);
     font-size: 0.9rem;
     color: var(--color-black-60);
+    text-align: center;
+    width: 80%;
 }
 
 /* Table */
@@ -405,9 +425,31 @@ tbody tr:last-child td {
 .stat strong {
     font-size: 1.1rem;
 }
+.modal-chart {
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    margin-top: 1rem;
+}
 .modal-chart h3 {
     font-size: 0.9rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
+    flex-shrink: 0;
+}
+.modal-chart-wrapper {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
+    height: 100%;
+}
+.modal-chart-wrapper canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 100% !important;
 }
 
 .loader {

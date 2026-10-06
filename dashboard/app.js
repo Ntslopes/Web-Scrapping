@@ -32,8 +32,10 @@ let requestControllers = {
     athletes: null
 };
 
-Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
-Chart.defaults.color = "#0A0A0A";
+if (typeof Chart !== 'undefined') {
+    Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
+    Chart.defaults.color = "#0A0A0A";
+}
 
 const formatNumber = (num) => num != null ? num.toLocaleString("pt-BR") : '-';
 const formatDate = (dateStr) => {
@@ -122,6 +124,7 @@ async function loadDashboard() {
         renderCards(data.cards);
         renderCharts(data);
     } catch (e) {
+        setLoadingStateCards(false);
         if (e.name !== 'AbortError') console.error('Dashboard load failed', e);
     }
 }
@@ -134,6 +137,10 @@ function setLoadingStateCards(isLoading) {
 }
 
 function renderCards(cards) {
+    if (!cards) {
+        setLoadingStateCards(false);
+        return;
+    }
     document.getElementById('card-total').querySelector('.value').textContent = formatNumber(cards.total_athletes);
     document.getElementById('card-avg').querySelector('.value').textContent = formatNumber(cards.average_points);
     document.getElementById('card-max').querySelector('.value').textContent = formatNumber(cards.max_points);
@@ -145,14 +152,22 @@ function renderCards(cards) {
 }
 
 function renderCharts(data) {
+    if (typeof Chart === 'undefined') {
+        console.warn('Chart.js não carregado.');
+        return;
+    }
+
     // Top 10 Athletes
     const ctxTop = document.getElementById('chart-top');
-    if (charts.top) charts.top.destroy();
+    if (charts.top) {
+        charts.top.destroy();
+        charts.top = null;
+    }
     if (data.top_athletes && data.top_athletes.length > 0) {
         charts.top = new Chart(ctxTop, {
             type: 'bar',
             data: {
-                labels: data.top_athletes.map(a => a.name.split(' ')[0]), // Primeiro nome para caber
+                labels: data.top_athletes.map(a => (a.name || '').split(' ')[0]), // Primeiro nome para caber
                 datasets: [{
                     label: 'Pontuação',
                     data: data.top_athletes.map(a => a.points),
@@ -175,7 +190,10 @@ function renderCharts(data) {
 
     // Points Distribution
     const ctxDist = document.getElementById('chart-dist');
-    if (charts.dist) charts.dist.destroy();
+    if (charts.dist) {
+        charts.dist.destroy();
+        charts.dist = null;
+    }
     if (data.points_distribution && data.points_distribution.length > 0) {
         charts.dist = new Chart(ctxDist, {
             type: 'bar',
@@ -203,7 +221,10 @@ function renderCharts(data) {
     // History
     const ctxHistory = document.getElementById('chart-history');
     const msgHistory = document.getElementById('chart-history-msg');
-    if (charts.history) charts.history.destroy();
+    if (charts.history) {
+        charts.history.destroy();
+        charts.history = null;
+    }
     
     if (!data.collections_timeline || data.collections_timeline.length <= 1) {
         ctxHistory.style.display = 'none';
@@ -248,7 +269,13 @@ async function loadAthletes() {
         const data = await fetchJSON('/athletes', params, 'athletes');
         renderTable(data);
     } catch (e) {
-        if (e.name !== 'AbortError') console.error('Athletes load failed', e);
+        if (e.name !== 'AbortError') {
+            console.error('Athletes load failed', e);
+            const emptyState = document.getElementById('table-empty');
+            emptyState.textContent = 'Não foi possível carregar os atletas (verifique se a API está ativa).';
+            emptyState.classList.remove('hidden');
+            document.getElementById('athletes-table').style.display = 'none';
+        }
     }
 }
 
@@ -345,9 +372,12 @@ async function openAthleteModal(athlete) {
 
 function renderModalChart(history) {
     const ctx = document.getElementById('modal-history-chart');
-    if (charts.modal) charts.modal.destroy();
+    if (charts.modal) {
+        charts.modal.destroy();
+        charts.modal = null;
+    }
     
-    if (!history || history.length === 0) return;
+    if (!history || history.length === 0 || typeof Chart === 'undefined') return;
     
     charts.modal = new Chart(ctx, {
         type: 'line',
